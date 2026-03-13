@@ -84,7 +84,7 @@ if(isset($_POST['Username'])) {
         $userquery = mysqli_fetch_array(mysqli_query($koneksi, "SELECT * FROM users WHERE Username = '$username' AND Password = '$password'"));
         
         if($userquery) {
-            $_SESSION['level'] = 'admin';
+            $_SESSION['level'] = $userquery['Role'];
             $_SESSION['Username'] = $username;
             header("location:index.php");
             exit();
