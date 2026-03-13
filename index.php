@@ -1,7 +1,8 @@
 <?php
-session_start();
-require_once("config/koneksi.php");
-if(isset($_SESSION['Username'])){
+  session_start();
+  require_once("config/koneksi.php");
+  if(isset($_SESSION['Role'])) {
+    $role = $_SESSION['Role'];
 ?>
 <!DOCTYPE html>
 <!--
@@ -9,7 +10,6 @@ This is a starter template page. Use this page to start your new project from
 scratch. This page gets rid of all links and provides the needed markup only.
 -->
 <html lang="en">
-
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -64,10 +64,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
         </div>
       </li>
 
-        <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
-          <i class="fas fa-th-large"></i>
-        </a>
-      </li>
     </ul>
   </nav>
   <!-- /.navbar -->
@@ -88,7 +84,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
           <img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-          <a href="#" class="d-block">Alexander Pierce</a>
+          <a href="#" class="d-block"><?php echo $_SESSION['username']; ?></a>
         </div>
       </div>
 
@@ -108,57 +104,87 @@ scratch. This page gets rid of all links and provides the needed markup only.
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <!-- Add icons to the links using the .nav-icon class
-                with font-awesome or any other icon font library -->
-<li class="nav-item menu-open">
-  <a href="#" class="nav-link active">
-    <i class="nav-icon fas fa-tachometer-alt"></i>
-    <p>
-      KING
-      <i class="right fas fa-angle-left"></i>
-    </p>
-  </a>
-  <ul class="nav nav-treeview">
-    <li class="nav-item">
-      <a href="#" class="nav-link active">
-        <i class="far fa-circle nav-icon"></i>
-        <p>MATAPELAJARAN</p>
-      </a>
-    </li>
-    <li class="nav-item">
-      <a href="#" class="nav-link">
-        <i class="far fa-circle nav-icon"></i>
-        <p>GURU</p>
-      </a>
-    </li>
-    <li class="nav-item">
-      <a href="#" class="nav-link">
-        <i class="far fa-circle nav-icon"></i>
-        <p>SISWA</p>
-      </a>
-    </li>
-    <!-- Tambahan menu KELAS -->
-    <li class="nav-item">
-      <a href="#" class="nav-link">
-        <i class="far fa-circle nav-icon"></i>
-        <p>KELAS</p>
-      </a>
-    </li>
-  </ul>
-</li>
-          
-                    <li class="nav-item menu-open">
+               with font-awesome or any other icon font library -->
+
+          <li class="nav-item menu-open">
             <a href="#" class="nav-link active">
               <i class="nav-icon fas fa-tachometer-alt"></i>
               <p>
-                TRANSAKSI
+                Master
                 <i class="right fas fa-angle-left"></i>
               </p>
             </a>
+
+            <?php if ($role == 'admin') : ?>
             <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Guru</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Siswa</p>
+                </a>
+              </li>
               <li class="nav-item">
                 <a href="#" class="nav-link active">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>JADWAL</p>
+                  <p>Mata Pelajaran</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Kelas</p>
+                </a>
+              </li>
+            </ul>
+            <?php endif; ?>   
+
+            <?php if ($role == 'guru') : ?>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Guru</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Kelas</p>
+                </a>
+              </li>
+            </ul>
+            <?php endif; ?>            
+
+            <?php if ($role == 'siswa') : ?>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Siswa</p>
+                </a>
+              </li>
+            </ul>
+            <?php endif; ?> 
+
+          </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link active">
+                  <i class="nav-icon fas fa-tachometer-alt"></i>
+                  <p>Transaksi
+                    <i class="right fas fa-angle-left"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Jadwal</p>
                 </a>
               </li>
             </ul>
@@ -167,8 +193,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <a href="logout.php" class="nav-link">
               <i class="nav-icon fas fa-th"></i>
               <p>
-                LOGOUT
-                <span class="right badge badge-danger"></span>
+                Logout
               </p>
             </a>
           </li>
@@ -206,14 +231,18 @@ scratch. This page gets rid of all links and provides the needed markup only.
           <div class="col-lg-12">
             <div class="card">
               <div class="card-body">
-                <h5 class="card-title">Card title</h5>
+                <h5 class="card-title">Dashboard</h5>
 
                 <p class="card-text">
-                  ~~~SELAMAT DATANG DI WEBSITE SEKOLAH KAMI~~~
+                  Halo sayang
                 </p>
+                
               </div>
-
             </div>
+
+          </div>
+          <!-- /.col-md-6 -->
+
           </div>
           <!-- /.col-md-6 -->
         </div>
@@ -257,7 +286,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 </body>
 </html>
 <?php
-}else{
-    echo '<meta http-equiv="refresh" content="0; url=login.php">';
-}
+  } else {
+    echo"<meta http-equiv='refresh' content='0; url=login.php'>";
+  }
 ?>
