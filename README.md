@@ -11,3 +11,4 @@ Membuat sistem CRUD sederhana
  Generate kode otomatis
  Penggunaan Bootstrap untuk tampilan
  Struktur folder yang terorganisir
+ menambahkan sql mapel 
