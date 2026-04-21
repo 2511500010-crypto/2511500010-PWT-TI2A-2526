@@ -11,7 +11,7 @@
   <title>AdminLTE 3 | Log in</title>
 
   <!-- Google Font: Source Sans Pro -->
-  <link rel="stylesheet" href="https:fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
   <!-- icheck bootstrap -->
@@ -29,17 +29,17 @@
     <div class="card-body login-card-body">
       <p class="login-box-msg">Sign in to start your session</p>
 
-      <form action="login.php" method="post">
+      <form action="" method="post">
         <div class="input-group mb-3">
-          <input type="text" name="Username" class="form-control" placeholder="Username">
+          <input type="text" name="Username" class="form-control" placeholder="Username" required>
           <div class="input-group-append">
             <div class="input-group-text">
-              <span class="fas fa-envelope"></span>
+              <span class="fas fa-user"></span>
             </div>
           </div>
         </div>
         <div class="input-group mb-3">
-          <input type="Password" name="Password" class="form-control" id="Password" placeholder="Password">
+          <input type="password" name="Password" class="form-control" id="Password" placeholder="Password" required>
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-lock"></span>
@@ -47,11 +47,10 @@
           </div>
         </div>
         
-          <!-- /.col -->
-          <div class="col-4">
-            <button type="submit" name="login" value="login" class="btn btn-primary btn-block">Login</button>
+        <div class="row">
+          <div class="col-12">
+            <button type="submit" name="login" class="btn btn-primary btn-block">Login</button>
           </div>
-          <!-- /.col -->
         </div>
       </form>
 
@@ -70,24 +69,34 @@
 </html>
 
 <?php
-if (isset($_POST['Username'])) {
+if (isset($_POST['login'])) {
     $Username = $_POST['Username'];
     $Password = $_POST['Password'];
 
     if (empty($Username) || empty($Password)) {
-        echo "Data Tidak Boleh kosong";
+        echo '<script>alert("Username dan Password tidak boleh kosong!");</script>';
     } else {
-        $userquery = mysqli_fetch_array(mysqli_query($koneksi, "SELECT * FROM users WHERE Username = '$Username' AND Password = '$Password'"));
+        $query = mysqli_query($koneksi, "SELECT * FROM users WHERE Username = '$Username' AND Password = '$Password'");
+        $userquery = mysqli_fetch_array($query);
         
         if ($userquery) {
             $_SESSION['Role'] = $userquery['Role'];
             $_SESSION['Username'] = $Username;
-            header("location:index.php");
+            
+            // CEK KHUSUS ROLE GURU DENGAN PASSWORD DEFAULT 12345
+            // Redirect ke file ganti_password.php yang ada di folder PAGE
+            if ($userquery['Role'] == 'guru' && $Password == '12345') {
+                header("location:PAGES/ganti_password.php");
+                exit;
+            } else {
+                header("location:index.php");
+                exit;
+            }
         } else {
-            echo '<div class="alert alert-danger alert-dismissible">
+            echo '<div class="alert alert-danger alert-dismissible" style="position:fixed;top:20px;right:20px;z-index:9999;">
                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                    <h5><i class="icon fas fa-ban"></i> Alert!</h5>
-                    Login gagal
+                    <h5><i class="icon fas fa-ban"></i> Login Gagal!</h5>
+                    Username atau Password salah!
                   </div>';
         }
     }
