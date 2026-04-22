@@ -7,15 +7,23 @@ if(!isset($_SESSION['Username'])) {
     exit;
 }
 
-if($_SESSION['Role'] != 'guru') {
+$role = $_SESSION['Role'];
+$username = $_SESSION['Username'];
+
+// Validasi role (hanya guru atau siswa)
+if($role != 'guru' && $role != 'siswa') {
     header("location:../index.php");
     exit;
 }
 
-$username = $_SESSION['Username'];
-
 $error = '';
 $success = '';
+
+// Cek apakah masih menggunakan password default
+$query_cek = mysqli_query($koneksi, "SELECT * FROM users WHERE Username = '$username'");
+$user_data = mysqli_fetch_assoc($query_cek);
+$password_default = ($role == 'guru') ? '12345' : '1234';
+$is_default_password = ($user_data['Password'] == $password_default);
 
 if(isset($_POST['ganti_password'])){
     $password_lama = $_POST['password_lama'];
@@ -25,6 +33,7 @@ if(isset($_POST['ganti_password'])){
     $query = mysqli_query($koneksi, "SELECT * FROM users WHERE Username = '$username'");
     $user = mysqli_fetch_assoc($query);
     
+    // Validasi
     if($password_lama != $user['Password']) {
         $error = "Password lama salah!";
     } 
@@ -45,8 +54,35 @@ if(isset($_POST['ganti_password'])){
     }
 }
 
-$query_guru = mysqli_query($koneksi, "SELECT * FROM guru WHERE Kd_guru = '$username'");
-$data_guru = mysqli_fetch_assoc($query_guru);
+// Ambil data berdasarkan role
+$nama = '';
+$info_pertama = '';
+$info_kedua = '';
+$icon = '';
+
+if($role == 'guru') {
+    $query_data = mysqli_query($koneksi, "SELECT * FROM guru WHERE Kd_guru = '$username'");
+    $data = mysqli_fetch_assoc($query_data);
+    $nama = $data['Nm_guru'] ?? '-';
+    $info_pertama = "Kode Guru";
+    $info_kedua = "Nama Guru";
+    $icon = "fas fa-chalkboard-teacher";
+} else { // role siswa
+    $query_data = mysqli_query($koneksi, "SELECT * FROM siswa WHERE Nis = '$username'");
+    $data = mysqli_fetch_assoc($query_data);
+    $nama = $data['Nm_siswa'] ?? '-';
+    $info_pertama = "NIS";
+    $info_kedua = "Nama Siswa";
+    $icon = "fas fa-user-graduate";
+    
+    // Ambil kelas siswa jika ada
+    $kelas_siswa = "";
+    if($data && $data['Kd_kelas']) {
+        $query_kelas = mysqli_query($koneksi, "SELECT Nm_kelas FROM kelas WHERE Kd_kelas = '".$data['Kd_kelas']."'");
+        $data_kelas = mysqli_fetch_assoc($query_kelas);
+        $kelas_siswa = $data_kelas['Nm_kelas'] ?? '-';
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -54,25 +90,19 @@ $data_guru = mysqli_fetch_assoc($query_guru);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ganti Password - Guru | HALO Connect</title>
+    <title>Ganti Password - <?= ucfirst($role) ?> | HALO Connect</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* ===== ULTRA COLOR PALETTE ===== */
         :root {
-            /* Core Colors */
-            --rose: #e8b4b8;      /* Rhea - Rose */
-            --azure: #a8d8ea;     /* Aether - Azure */
-            --peach: #ffd7b5;     /* Eos - Peach */
-            --sage: #c1d5c0;      /* Zephyr - Sage */
-            --cream: #fff5e6;     /* Cream Base */
-            
-            /* Mood Pastels (Breeze, Cloud) */
-            --breeze: #c9e9f6;    /* Soft Breeze */
-            --cloud: #f0f0f0;     /* Soft Cloud */
+            --rose: #e8b4b8;
+            --azure: #a8d8ea;
+            --peach: #ffd7b5;
+            --sage: #c1d5c0;
+            --cream: #fff5e6;
+            --breeze: #c9e9f6;
+            --cloud: #f0f0f0;
             --halo-glow: rgba(168, 216, 234, 0.4);
-            
-            /* Typography Colors */
             --text-dark: #4a4a6a;
             --text-soft: #7a7a9a;
             --white-soft: #fefefe;
@@ -85,17 +115,18 @@ $data_guru = mysqli_fetch_assoc($query_guru);
         }
         
         body {
-            background: linear-gradient(145deg, var(--azure) 0%, var(--rose) 50%, var(--peach) 100%);
+            background: <?php echo ($role == 'guru') ? 
+                'linear-gradient(145deg, var(--azure) 0%, var(--rose) 50%, var(--peach) 100%)' : 
+                'linear-gradient(145deg, var(--sage) 0%, var(--azure) 50%, var(--peach) 100%)'; ?>;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
-            font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system, sans-serif;
+            font-family: 'Segoe UI', 'Poppins', system-ui, sans-serif;
             position: relative;
         }
         
-        /* Soft Diffused Halo Effect */
         body::before {
             content: '';
             position: absolute;
@@ -112,10 +143,9 @@ $data_guru = mysqli_fetch_assoc($query_guru);
             width: 100%;
             max-width: 500px;
             border-radius: 32px;
-            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.02);
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.08);
             overflow: hidden;
             background: var(--white-soft);
-            backdrop-filter: blur(2px);
             position: relative;
             z-index: 1;
             transition: transform 0.3s ease;
@@ -125,9 +155,10 @@ $data_guru = mysqli_fetch_assoc($query_guru);
             transform: translateY(-4px);
         }
         
-        /* Card Header dengan Gradient ultra-pastel */
         .card-header {
-            background: linear-gradient(125deg, var(--rose) 0%, var(--peach) 40%, var(--cream) 100%);
+            background: <?php echo ($role == 'guru') ? 
+                'linear-gradient(125deg, var(--rose) 0%, var(--peach) 40%, var(--cream) 100%)' : 
+                'linear-gradient(125deg, var(--sage) 0%, var(--peach) 40%, var(--cream) 100%)'; ?>;
             padding: 28px 25px;
             text-align: center;
             border-bottom: none;
@@ -138,18 +169,15 @@ $data_guru = mysqli_fetch_assoc($query_guru);
             font-size: 26px;
             font-weight: 600;
             color: var(--text-dark);
-            letter-spacing: -0.3px;
         }
         
         .card-header h3 i {
-            color: var(--sage);
+            color: var(--rose);
             margin-right: 8px;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
         
         .card-header p {
             margin: 12px 0 0;
-            opacity: 0.85;
             font-size: 14px;
             color: var(--text-dark);
             font-weight: 500;
@@ -172,16 +200,14 @@ $data_guru = mysqli_fetch_assoc($query_guru);
         }
         
         .form-group label i {
-            color: var(--rose);
+            color: var(--sage);
             margin-right: 8px;
-            width: 18px;
         }
         
         .form-control {
             border-radius: 60px;
             border: 1.5px solid #edeef2;
             padding: 12px 18px;
-            font-size: 14px;
             background-color: var(--cream);
             transition: all 0.25s ease;
             color: var(--text-dark);
@@ -202,16 +228,13 @@ $data_guru = mysqli_fetch_assoc($query_guru);
             font-weight: 600;
             width: 100%;
             color: var(--text-dark);
-            font-size: 1rem;
             transition: all 0.25s ease;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.03);
         }
         
         .btn-primary:hover {
             background: linear-gradient(105deg, #b3d0b2 0%, #96c8df 100%);
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(168, 216, 234, 0.3);
-            color: #2d2d4a;
         }
         
         .btn-secondary {
@@ -223,28 +246,24 @@ $data_guru = mysqli_fetch_assoc($query_guru);
             margin-top: 12px;
             color: var(--text-dark);
             font-weight: 500;
-            transition: all 0.2s;
         }
         
         .btn-secondary:hover {
             background-color: var(--cloud);
             border-color: var(--rose);
-            transform: translateY(-1px);
         }
         
         .info-box {
             background: linear-gradient(110deg, var(--cream) 0%, #fffaf2 100%);
-            border-left: 5px solid var(--peach);
+            border-left: 5px solid <?php echo ($role == 'guru') ? 'var(--peach)' : 'var(--sage)'; ?>;
             padding: 16px 18px;
             border-radius: 24px;
             margin-bottom: 28px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
         }
         
         .info-box .text-muted {
             color: var(--text-soft) !important;
             font-size: 0.7rem;
-            letter-spacing: 0.5px;
         }
         
         .info-box strong {
@@ -259,7 +278,6 @@ $data_guru = mysqli_fetch_assoc($query_guru);
             border-radius: 20px;
             padding: 12px 18px;
             margin-bottom: 20px;
-            font-size: 0.9rem;
         }
         
         .alert-success {
@@ -271,26 +289,20 @@ $data_guru = mysqli_fetch_assoc($query_guru);
             margin-bottom: 20px;
         }
         
+        .alert-warning {
+            background-color: #fff3e0;
+            border-color: var(--peach);
+            color: #a87c3e;
+            border-radius: 20px;
+            padding: 12px 18px;
+            margin-bottom: 20px;
+        }
+        
         small.text-muted {
             color: var(--text-soft) !important;
             font-size: 0.7rem;
             margin-top: 6px;
             display: inline-block;
-        }
-        
-        /* Ripple / Breeze efek ringan di card */
-        .card-body::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 180px;
-            height: 180px;
-            background: radial-gradient(circle, var(--breeze) 0%, transparent 70%);
-            opacity: 0.2;
-            pointer-events: none;
-            border-radius: 50%;
-            z-index: 0;
         }
         
         @media (max-width: 480px) {
@@ -307,9 +319,15 @@ $data_guru = mysqli_fetch_assoc($query_guru);
     <div class="card">
         <div class="card-header">
             <h3><i class="fas fa-hands-helping"></i> HALO Connect</h3>
-            <p>Ganti password • aman & terpercaya</p>
+            <p>Ganti password • <?= ucfirst($role) ?> • aman & terpercaya</p>
         </div>
         <div class="card-body">
+            <?php if($is_default_password): ?>
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i> <strong>Peringatan!</strong> Anda masih menggunakan password default (<?= $password_default ?>). Silakan ganti password Anda sekarang!
+                </div>
+            <?php endif; ?>
+            
             <?php if($error): ?>
                 <div class="alert alert-danger">
                     <i class="fas fa-times-circle"></i> <?= $error ?>
@@ -330,20 +348,31 @@ $data_guru = mysqli_fetch_assoc($query_guru);
             <div class="info-box">
                 <div class="row">
                     <div class="col-6">
-                        <small class="text-muted"><i class="fas fa-user-circle"></i> Username</small><br>
+                        <small class="text-muted"><i class="fas fa-id-card"></i> <?= $info_pertama ?></small><br>
                         <strong><?= htmlspecialchars($username) ?></strong>
                     </div>
                     <div class="col-6">
-                        <small class="text-muted"><i class="fas fa-chalkboard-teacher"></i> Nama Guru</small><br>
-                        <strong><?= htmlspecialchars($data_guru['Nm_guru'] ?? '-') ?></strong>
+                        <small class="text-muted"><i class="<?= $icon ?>"></i> <?= $info_kedua ?></small><br>
+                        <strong><?= htmlspecialchars($nama) ?></strong>
                     </div>
                 </div>
+                <?php if($role == 'siswa' && !empty($kelas_siswa)): ?>
+                <div class="row mt-2">
+                    <div class="col-12">
+                        <small class="text-muted"><i class="fas fa-school"></i> Kelas</small><br>
+                        <strong><?= htmlspecialchars($kelas_siswa) ?></strong>
+                    </div>
+                </div>
+                <?php endif; ?>
             </div>
             
             <form method="POST">
                 <div class="form-group">
                     <label><i class="fas fa-lock"></i> Password Lama</label>
                     <input type="password" name="password_lama" class="form-control" placeholder="Masukkan password lama" required autofocus>
+                    <?php if($is_default_password): ?>
+                        <small class="text-muted"><i class="fas fa-info-circle"></i> Password default Anda adalah: <?= $password_default ?></small>
+                    <?php endif; ?>
                 </div>
                 <div class="form-group">
                     <label><i class="fas fa-key"></i> Password Baru</label>

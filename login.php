@@ -1,6 +1,6 @@
 <?php
-  include "config/koneksi.php";
-  session_start();
+session_start();
+include "config/koneksi.php";
 ?>
 
 <!DOCTYPE html>
@@ -8,7 +8,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AdminLTE 3 | Log in</title>
+  <title>Login | HALO Connect</title>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -22,16 +22,15 @@
 <body class="hold-transition login-page">
 <div class="login-box">
   <div class="login-logo">
-    <a href="index.php"><b>Admin</b>LTE</a>
+    <a href="index.php"><b>HALO</b>Connect</a>
   </div>
-  <!-- /.login-logo -->
   <div class="card">
     <div class="card-body login-card-body">
-      <p class="login-box-msg">Sign in to start your session</p>
+      <p class="login-box-msg">Silakan login untuk memulai sesi Anda</p>
 
       <form action="" method="post">
         <div class="input-group mb-3">
-          <input type="text" name="Username" class="form-control" placeholder="Username" required>
+          <input type="text" name="Username" class="form-control" placeholder="Username" required autofocus>
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-user"></span>
@@ -54,10 +53,14 @@
         </div>
       </form>
 
-    <!-- /.login-card-body -->
+      <div class="mt-3 text-center">
+        <small class="text-muted">
+          <i class="fas fa-info-circle"></i> Demo Akun:<br>
+        </small>
+      </div>
+    </div>
   </div>
 </div>
-<!-- /.login-box -->
 
 <!-- jQuery -->
 <script src="plugins/jquery/jquery.min.js"></script>
@@ -70,7 +73,7 @@
 
 <?php
 if (isset($_POST['login'])) {
-    $Username = $_POST['Username'];
+    $Username = mysqli_real_escape_string($koneksi, $_POST['Username']);
     $Password = $_POST['Password'];
 
     if (empty($Username) || empty($Password)) {
@@ -80,15 +83,25 @@ if (isset($_POST['login'])) {
         $userquery = mysqli_fetch_array($query);
         
         if ($userquery) {
-            $_SESSION['Role'] = $userquery['Role'];
+            $role = $userquery['Role'];
+            $_SESSION['Role'] = $role;
             $_SESSION['Username'] = $Username;
             
-            // CEK KHUSUS ROLE GURU DENGAN PASSWORD DEFAULT 12345
-            // Redirect ke file ganti_password.php yang ada di folder PAGE
-            if ($userquery['Role'] == 'guru' && $Password == '12345') {
+            // CEK PASSWORD DEFAULT UNTUK GURU DAN SISWA
+            $harus_ganti_password = false;
+            
+            if ($role == 'guru' && $Password == '12345') {
+                $harus_ganti_password = true;
+            } elseif ($role == 'siswa' && $Password == '12345') {
+                $harus_ganti_password = true;
+            }
+            
+            // Jika masih password default, redirect ke halaman ganti password
+            if ($harus_ganti_password) {
                 header("location:PAGES/ganti_password.php");
                 exit;
             } else {
+                // Redirect ke dashboard
                 header("location:index.php");
                 exit;
             }
