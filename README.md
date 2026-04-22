@@ -12,3 +12,11 @@ Membuat sistem CRUD sederhana
  Penggunaan Bootstrap untuk tampilan
  Struktur folder yang terorganisir
  menambahkan sql mapel 
+
+ Hari 22-rabu-2026
+ saya mempelajari : 
+ <ul>
+    <li>memodifikasi kode di bagian folder pages untuk ganti password bagian siswa</li>
+    <li>menambahkan profil_guru beserta kode didalamnya</li>
+    <li> menambahkan kelas_guru beserta kode fungsinya </li>
+ </ul>
