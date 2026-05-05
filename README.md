@@ -20,3 +20,19 @@ Membuat sistem CRUD sederhana
     <li>menambahkan profil_guru beserta kode didalamnya</li>
     <li> menambahkan kelas_guru beserta kode fungsinya </li>
  </ul>
+
+ Hari selasa 5 mei 2025
+ Saya mempelajari :
+ <ul> 
+   <li>memodifikasi di bagian admin </li>
+   <li>menambah tabel ekstrakurikuler </li>
+   <li>Membuat file yang bernama ekstra2511500010.php</li>
+   <li>Membuat sintak agar tampilan fungsi ekstrakurikuler dengan mengambil kode di mapel.php </li>
+  <li>Membuat file yang bernama tambah_ekstra2511500010.php</li>
+  <li>Membuat sintak agar tampilan fungsi ekstrakurikuler dengan mengambil kode di tambah_mapel.php dan tambah_guru.php </li>
+  <li>Membuat file yang bernama edit_ekstra2511500010.php</li>
+  <li> sintak yang di buat adalah gabungan dari edit_mapel dan edit_guru karena menggunakan option </li>
+  <li> Menambahkan sql export kedalam vscode </li>
+ </ul>
+
+ catatatn:
