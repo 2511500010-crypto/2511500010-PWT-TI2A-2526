@@ -33,7 +33,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="index3.html" class="nav-link">Home</a>
+        <a href="index.php" class="nav-link">Home</a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
         <a href="#" class="nav-link">Contact</a>
@@ -71,7 +71,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href="index3.html" class="brand-link">
+    <a href="index.php" class="brand-link">
       <img src="dist/img/franco1.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
       <span class="brand-text font-weight-light">AdminLTE 3</span>
     </a>
@@ -132,7 +132,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 </a>
               </li>
               <li class="nav-item">
-                <a href="index.php?page=ekstra2511500010" class="nav-link <?php echo (isset($_GET['page']) && $_GET['page'] == 'siswa') ? 'active' : ''; ?>">
+                <a href="index.php?page=ekstra2511500010" class="nav-link <?php echo (isset($_GET['page']) && $_GET['page'] == 'ekstra2511500010') ? 'active' : ''; ?>">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Ekstrakurikuler</p>
                 </a>
@@ -187,9 +187,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <?php endif; ?> 
           </li>
 
-          <!-- TRANSAKSI MENU -->
-          <li class="nav-item <?php echo (isset($_GET['page']) && $_GET['page'] == 'jadwal') ? 'menu-open' : ''; ?>">
-            <a href="#" class="nav-link <?php echo (isset($_GET['page']) && $_GET['page'] == 'jadwal') ? 'active' : ''; ?>">
+          <!-- TRANSAKSI MENU - SUDAH DIPERBAIKI -->
+          <li class="nav-item <?php echo (isset($_GET['page']) && ($_GET['page'] == 'jadwal' || $_GET['page'] == 'tambah_jadwal')) ? 'menu-open' : ''; ?>">
+            <a href="#" class="nav-link <?php echo (isset($_GET['page']) && ($_GET['page'] == 'jadwal' || $_GET['page'] == 'tambah_jadwal')) ? 'active' : ''; ?>">
               <i class="nav-icon fas fa-chart-line"></i>
               <p>Transaksi <i class="right fas fa-angle-left"></i></p>
             </a>
@@ -268,7 +268,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
               if ($page == "") {
                 include "page/dashboard.php";
               } elseif (!file_exists("page/$page.php")) {
-                echo '<div class="alert alert-danger">File Halaman Tidak Ditemukan</div>';
+                echo '<div class="alert alert-danger">File Halaman Tidak Ditemukan: page/' . $page . '.php</div>';
               } else {
                 include "page/$page.php";
               }
