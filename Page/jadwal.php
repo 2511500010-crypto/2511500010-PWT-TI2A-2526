@@ -56,7 +56,7 @@ if(isset($_GET['action'])) {
                                 <th>Kelas</th>
                                 <th>Tahun Ajaran</th>
                                 <th width="12%">Semester</th>
-                                <th width="18%">Aksi</th>
+                                <th width="25%">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -94,17 +94,23 @@ if(isset($_GET['action'])) {
                                         ?>
                                     </td>
                                     <td>
-                                    <div class="btn-group" role="group">
-                                        <a href="index.php?page=jadwal&action=hapus&id=<?= $result['Id_jadwal'] ?>" 
-                                           onclick="return confirm('Yakin ingin menghapus jadwal ini?')"
-                                           class="btn btn-danger btn-sm shadow-sm">
-                                            <i class="fas fa-trash"></i> Hapus
-                                        </a>
-                                        <a href="index.php?page=detail_jadwal&kd=<?= $result['Id_jadwal'] ?>" 
-                                           class="btn btn-warning btn-sm shadow-sm">
-                                            <i class="fas fa-eye"></i> Detail
-                                        </a>
-                                    </div>
+                                        <div class="btn-group" role="group">
+                                            <a href="index.php?page=jadwal&action=hapus&id=<?= $result['Id_jadwal'] ?>" 
+                                               onclick="return confirm('Yakin ingin menghapus jadwal ini?')"
+                                               class="btn btn-danger btn-sm shadow-sm">
+                                                <i class="fas fa-trash"></i> Hapus
+                                            </a>
+                                            <a href="index.php?page=detail_jadwal&kd=<?= $result['Id_jadwal'] ?>" 
+                                               class="btn btn-warning btn-sm shadow-sm">
+                                                <i class="fas fa-eye"></i> Detail
+                                            </a>
+                                            <!-- TOMBOL CETAK -->
+                                            <a href="index.php?page=cetak_jadwal&id=<?= $result['Id_jadwal'] ?>" 
+                                               class="btn btn-success btn-sm shadow-sm" 
+                                               target="_blank">
+                                                <i class="fas fa-print"></i> Cetak
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
                             <?php
@@ -127,7 +133,6 @@ if(isset($_GET['action'])) {
     </div>
 </div>
 
-<!-- Optional: Tambahkan CSS tambahan di bagian bawah file atau di head -->
 <style>
     .card {
         border-radius: 15px;
